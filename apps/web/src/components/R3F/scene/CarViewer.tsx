@@ -1,11 +1,10 @@
-import { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo, type FC } from 'react'
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 import type { BuildSelection, Catalog, VisualEffect } from '@car-config/core'
 import { selectedOptionIds } from '@car-config/core'
 import { MATERIAL_PRESETS } from '../../../shared/const.ts'
-import { useGlobalState } from '../../../state/useGlobalState.ts'
-import catalogJson from '@car-config/core/catalog'
+import { useConfiguration } from '../../../hooks/useConfiguration.ts'
 
 /* ------------------------------------------------------------------ */
 /* Named material presets                                             */
@@ -156,17 +155,16 @@ function applyBuildToScene(root: THREE.Object3D, catalog: Catalog, build: BuildS
   }
 }
 
-export const CarViewer = () => {
-  const catalog = catalogJson as unknown as Catalog
+interface CarViewerProps {
+  catalog: Catalog
+}
 
-  const { build } = useGlobalState((state) => {
-    return {
-      build: state.build
-    }
-  })
+export const CarViewer: FC<CarViewerProps> = ({ catalog }) => {
 
-  const model = catalog.models.find((m) => m.id === build.modelId)
-  if (!model) throw new Error(`Unknown model: ${build.modelId}`)
+  const { build } = useConfiguration(catalog)
+
+  const model = catalog?.models.find((m) => m.id === build?.modelId)
+  if (!model) throw new Error(`Unknown model: ${build?.modelId}`)
 
   const { scene } = useGLTF(model.modelUrl)
 
@@ -182,6 +180,7 @@ export const CarViewer = () => {
   /* ---------------------------------------------------------------- */
 
   useLayoutEffect(() => {
+    if (!catalog || !build) return
     applyBuildToScene(root, catalog, build)
   }, [root, catalog, build])
 

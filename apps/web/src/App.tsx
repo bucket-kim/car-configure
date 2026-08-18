@@ -5,14 +5,16 @@ import UI from './components/UI/UI'
 
 function App() {
 
-  const { data, isLoading, error } = useCatalogQuery();
+  const { data: catalog, isLoading, error } = useCatalogQuery();
 
-  console.log(data, isLoading, error)
+  if (isLoading) return <p>Loading catalog…</p>
+  if (error) return <p>Failed to load: {String(error)}</p>
+  if (!catalog) return null
 
   return (
     <div className="app">
-      <R3F />
-      <UI />
+      <R3F catalog={catalog} />
+      <UI catalog={catalog} />
     </div>
   )
 }

@@ -1,18 +1,29 @@
-import { useState } from 'react'
+import { useState, type FC } from 'react'
 import { useConfiguration } from '../../hooks/useConfiguration'
 import { UIStyleContainer } from './UIStyleContainer'
-import type { GroupId } from '@car-config/core'
+import type { Catalog, GroupId } from '@car-config/core'
 import { formatCents } from '@car-config/core'
+import { useGlobalState } from '../../state/useGlobalState'
 
-const UI = () => {
+interface UIProps {
+    catalog: Catalog
+}
 
-    const { groups, price, optionsByGroup, disabled, selected, selectOption, reset } = useConfiguration()
+const UI: FC<UIProps> = ({ catalog }) => {
+
+    const { groups, price, optionsByGroup, disabled, selected } = useConfiguration(catalog)
+
+    const { selectOption, reset } = useGlobalState((state) => {
+        return {
+            selectOption: state.selectOption,
+            reset: state.reset,
+        }
+    })
 
     const [openGroup, setOpenGroup] = useState(new Set<GroupId>())
 
     const toggleOption = (key: GroupId) => {
         setOpenGroup((prev) => (prev.has(key) ? new Set() : new Set([key])))
-
     }
 
 
@@ -30,7 +41,7 @@ const UI = () => {
                                     const isDisabled = disabled.has(option.id)
                                     return (
                                         <div key={option.id} >
-                                            <button disabled={isDisabled} aria-pressed={selected.has(option.id)} onClick={() => selectOption(option.id)}>{option.label}</button>
+                                            <button disabled={isDisabled} aria-pressed={selected.has(option.id)} onClick={() => selectOption(catalog, option.id)}>{option.label}</button>
                                             <p>- {formatCents(option.priceCents)}</p>
                                         </div>
                                     )
@@ -40,7 +51,7 @@ const UI = () => {
                     )
                 })}
                 <p>{formatCents(price.totalCents)}</p>
-                <button onClick={() => reset()}>Reset</button>
+                <button onClick={() => reset(catalog)}>Reset</button>
             </div>
         </UIStyleContainer>
     )

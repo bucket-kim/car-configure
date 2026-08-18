@@ -1,11 +1,15 @@
-import { Suspense } from 'react'
+import { Suspense, type FC } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { CarViewer } from './scene/CarViewer.tsx'
 import Light from './Lighting/Light.tsx'
 import { OrbitControls } from '@react-three/drei'
+import type { Catalog } from '@car-config/core'
 
+interface R3FProps {
+    catalog: Catalog
+}
 
-const R3F = () => {
+const R3F: FC<R3FProps> = ({ catalog }) => {
 
     // const DEMO_BUILD: BuildSelection = useMemo(() => ({
     //     modelId: '911-c4s',
@@ -32,7 +36,7 @@ const R3F = () => {
         >
             <OrbitControls />
             <Suspense fallback={null}>
-                <CarViewer />
+                <CarViewer catalog={catalog} />
             </Suspense>
             <Light />
         </Canvas>

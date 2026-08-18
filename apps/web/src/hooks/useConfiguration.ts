@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type {
+  BuildSelection,
   Catalog,
   Option,
   OptionGroup,
@@ -29,6 +30,7 @@ import { useGlobalState } from "../state/useGlobalState";
  */
 export interface ConfigurationView {
   catalog: Catalog;
+  build: BuildSelection;
   groups: OptionGroup[];
   optionsByGroup: Record<string, Option[]>;
   selected: Set<OptionId>;
@@ -84,6 +86,7 @@ export function useConfiguration(catalog: Catalog): ConfigurationView {
     }
 
     return {
+      build,
       catalog,
       groups,
       optionsByGroup,
