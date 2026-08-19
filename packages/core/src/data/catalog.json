@@ -1,418 +1,353 @@
 {
-    "models": [
-        {
-            "id": "911-c4s",
-            "name": "911 Carrera 4S",
-            "basePriceCents": 13710000,
-            "modelUrl": "/models/porsche.glb",
-            "powertrain": {
-                "layout": "Rear-engine, all-wheel drive",
-                "engine": "3.0L twin-turbocharged flat-six",
-                "horsepower": 443,
-                "transmission": "8-speed PDK"
-            }
-        }
-    ],
-    "groups": [
-        {
-            "id": "exterior-color",
-            "label": "Exterior Colour",
-            "selection": "single",
-            "required": true,
-            "order": 1
-        },
-        {
-            "id": "wheels",
-            "label": "Wheels",
-            "selection": "single",
-            "required": true,
-            "order": 2
-        },
-        {
-            "id": "interior",
-            "label": "Interior",
-            "selection": "single",
-            "required": true,
-            "order": 3
-        },
-        {
-            "id": "packages",
-            "label": "Options & Packages",
-            "selection": "multiple",
-            "required": false,
-            "order": 4
-        }
-    ],
-    "options": [
-        {
-            "id": "c-white",
-            "groupId": "exterior-color",
-            "label": "White",
-            "priceCents": 0,
-            "description": "Solid finish, no cost.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#EDEDED",
-                "metallic": 0.1,
-                "roughness": 0.35
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "c-black",
-            "groupId": "exterior-color",
-            "label": "Black",
-            "priceCents": 0,
-            "description": "Solid finish, no cost.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#0E0E0E",
-                "metallic": 0.1,
-                "roughness": 0.35
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "c-guards-red",
-            "groupId": "exterior-color",
-            "label": "Guards Red",
-            "priceCents": 0,
-            "description": "The classic Porsche solid red.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#C6111A",
-                "metallic": 0.1,
-                "roughness": 0.32
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "c-gt-silver",
-            "groupId": "exterior-color",
-            "label": "GT Silver Metallic",
-            "priceCents": 84000,
-            "description": "Metallic finish.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#A8ABAE",
-                "metallic": 0.85,
-                "roughness": 0.22
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "c-shark-blue",
-            "groupId": "exterior-color",
-            "label": "Shark Blue",
-            "priceCents": 327000,
-            "description": "Special colour.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#1B7FC4",
-                "metallic": 0.7,
-                "roughness": 0.2
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "c-pts-rubystone",
-            "groupId": "exterior-color",
-            "label": "Rubystone Red (Paint to Sample)",
-            "priceCents": 1283000,
-            "description": "Paint to Sample. Extended delivery time.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "coat",
-                "hex": "#C2185B",
-                "metallic": 0.55,
-                "roughness": 0.25
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "w-carrera-s-20",
-            "groupId": "wheels",
-            "label": "20\"/21\" Carrera S Wheels",
-            "priceCents": 0,
-            "description": "Standard forged alloy wheels.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
-        },
-        {
-            "id": "w-carrera-exclusive-20",
-            "groupId": "wheels",
-            "label": "20\"/21\" Carrera Exclusive Design Wheels",
-            "priceCents": 165000,
-            "description": "Painted in Satin Aurum.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
-        },
-        {
-            "id": "w-rs-spyder-20",
-            "groupId": "wheels",
-            "label": "20\"/21\" RS Spyder Design Wheels",
-            "priceCents": 360000,
-            "description": "Motorsport-derived lightweight design.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
-        },
-        {
-            "id": "i-black-leather",
-            "groupId": "interior",
-            "label": "Black Leather Interior",
-            "priceCents": 0,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
-        },
-        {
-            "id": "i-bordeaux-leather",
-            "groupId": "interior",
-            "label": "Bordeaux Red Leather Interior",
-            "priceCents": 233000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
-        },
-        {
-            "id": "i-lightweight-buckets",
-            "groupId": "interior",
-            "label": "Full Bucket Seats",
-            "priceCents": 590000,
-            "description": "Carbon-fibre reinforced plastic shell. Weight-optimised.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
-        },
-        {
-            "id": "p-sport-chrono",
-            "groupId": "packages",
-            "label": "Sport Chrono Package",
-            "priceCents": 279000,
-            "description": "Mode switch, stopwatch, dynamic engine mounts.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "p-sport-exhaust",
-            "groupId": "packages",
-            "label": "Sport Exhaust System",
-            "priceCents": 295000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "Only one exhaust exists (boot012, material \"silver\"); no sport variant."
-        },
-        {
-            "id": "p-pasm-sport",
-            "groupId": "packages",
-            "label": "PASM Sport Suspension (-10mm)",
-            "priceCents": 151000,
-            "description": "Lowered, firmer adaptive damping.",
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "p-rear-axle-steer",
-            "groupId": "packages",
-            "label": "Rear-Axle Steering",
-            "priceCents": 209000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "p-pccb",
-            "groupId": "packages",
-            "label": "Porsche Ceramic Composite Brakes (PCCB)",
-            "priceCents": 897000,
-            "description": "Yellow calipers. Requires wheels with sufficient caliper clearance.",
-            "visual": {
-                "kind": "paint",
-                "targetMaterial": "Material.001",
-                "hex": "#F2C200",
-                "metallic": 0.5,
-                "roughness": 0.35
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        },
-        {
-            "id": "p-carbon-roof",
-            "groupId": "packages",
-            "label": "Carbon Fibre Roof",
-            "priceCents": 390000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "Roof is not a separate mesh; it is part of the body shell (boot008/boot011)."
-        },
-        {
-            "id": "p-sunroof",
-            "groupId": "packages",
-            "label": "Sliding Glass Sunroof",
-            "priceCents": 232000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ],
-            "visualTodo": "No Roof_Solid/Roof_Sunroof variants; roof is part of the body shell."
-        },
-        {
-            "id": "p-heated-seats",
-            "groupId": "packages",
-            "label": "Seat Heating",
-            "priceCents": 53000,
-            "visual": {
-                "kind": "none"
-            },
-            "availableOn": [
-                "911-c4s"
-            ]
-        }
-    ],
-    "rules": [
-        {
-            "id": "r-pccb-wheel-clearance",
-            "type": "requires",
-            "when": [
-                "p-pccb"
-            ],
-            "then": [
-                "w-carrera-exclusive-20",
-                "w-rs-spyder-20"
-            ],
-            "message": "Ceramic composite brakes require Carrera Exclusive or RS Spyder wheels for caliper clearance."
-        },
-        {
-            "id": "r-buckets-no-heating",
-            "type": "excludes",
-            "when": [
-                "i-lightweight-buckets"
-            ],
-            "then": [
-                "p-heated-seats"
-            ],
-            "message": "Full bucket seats are not available with seat heating."
-        },
-        {
-            "id": "r-roof-conflict",
-            "type": "excludes",
-            "when": [
-                "p-sunroof"
-            ],
-            "then": [
-                "p-carbon-roof"
-            ],
-            "message": "The carbon fibre roof cannot be combined with the sliding glass sunroof."
-        },
-        {
-            "id": "r-rear-steer-needs-pasm",
-            "type": "requires",
-            "when": [
-                "p-rear-axle-steer"
-            ],
-            "then": [
-                "p-pasm-sport"
-            ],
-            "message": "Rear-axle steering is only available with PASM Sport Suspension."
-        },
-        {
-            "id": "r-buckets-need-sport-suspension",
-            "type": "requires",
-            "when": [
-                "i-lightweight-buckets"
-            ],
-            "then": [
-                "p-pasm-sport"
-            ],
-            "message": "Full bucket seats are only offered alongside PASM Sport Suspension."
-        }
-    ],
-    "priceRules": [
-        {
-            "kind": "base",
-            "modelId": "911-c4s",
-            "amountCents": 13710000
-        },
-        {
-            "kind": "bundleDiscount",
-            "requires": [
-                "p-sport-chrono",
-                "p-sport-exhaust",
-                "p-pasm-sport"
-            ],
-            "amountCents": -120000,
-            "label": "Sport Plus package saving"
-        },
-        {
-            "kind": "fee",
-            "label": "Delivery, processing and handling",
-            "amountCents": 165000
-        }
-    ]
+  "models": [
+    {
+      "id": "911-c4s",
+      "name": "911 Carrera 4S",
+      "basePriceCents": 13710000,
+      "modelUrl": "/models/porsche.glb",
+      "powertrain": {
+        "layout": "Rear-engine, all-wheel drive",
+        "engine": "3.0L twin-turbocharged flat-six",
+        "horsepower": 443,
+        "transmission": "8-speed PDK"
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "exterior-color",
+      "label": "Exterior Colour",
+      "selection": "single",
+      "required": true,
+      "order": 1
+    },
+    {
+      "id": "wheels",
+      "label": "Wheels",
+      "selection": "single",
+      "required": true,
+      "order": 2
+    },
+    {
+      "id": "interior",
+      "label": "Interior",
+      "selection": "single",
+      "required": true,
+      "order": 3
+    },
+    {
+      "id": "packages",
+      "label": "Options & Packages",
+      "selection": "multiple",
+      "required": false,
+      "order": 4
+    }
+  ],
+  "options": [
+    {
+      "id": "c-white",
+      "groupId": "exterior-color",
+      "label": "White",
+      "priceCents": 0,
+      "description": "Solid finish, no cost.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#EDEDED",
+        "metallic": 0.1,
+        "roughness": 0.35
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "c-black",
+      "groupId": "exterior-color",
+      "label": "Black",
+      "priceCents": 0,
+      "description": "Solid finish, no cost.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#0E0E0E",
+        "metallic": 0.1,
+        "roughness": 0.35
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "c-guards-red",
+      "groupId": "exterior-color",
+      "label": "Guards Red",
+      "priceCents": 0,
+      "description": "The classic Porsche solid red.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#C6111A",
+        "metallic": 0.1,
+        "roughness": 0.32
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "c-gt-silver",
+      "groupId": "exterior-color",
+      "label": "GT Silver Metallic",
+      "priceCents": 84000,
+      "description": "Metallic finish.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#A8ABAE",
+        "metallic": 0.85,
+        "roughness": 0.22
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "c-shark-blue",
+      "groupId": "exterior-color",
+      "label": "Shark Blue",
+      "priceCents": 327000,
+      "description": "Special colour.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#1B7FC4",
+        "metallic": 0.7,
+        "roughness": 0.2
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "c-pts-rubystone",
+      "groupId": "exterior-color",
+      "label": "Rubystone Red (Paint to Sample)",
+      "priceCents": 1283000,
+      "description": "Paint to Sample. Extended delivery time.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "coat",
+        "hex": "#C2185B",
+        "metallic": 0.55,
+        "roughness": 0.25
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "w-carrera-s-20",
+      "groupId": "wheels",
+      "label": "20\"/21\" Carrera S Wheels",
+      "priceCents": 0,
+      "description": "Standard forged alloy wheels.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
+    },
+    {
+      "id": "w-carrera-exclusive-20",
+      "groupId": "wheels",
+      "label": "20\"/21\" Carrera Exclusive Design Wheels",
+      "priceCents": 165000,
+      "description": "Painted in Satin Aurum.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
+    },
+    {
+      "id": "w-rs-spyder-20",
+      "groupId": "wheels",
+      "label": "20\"/21\" RS Spyder Design Wheels",
+      "priceCents": 360000,
+      "description": "Motorsport-derived lightweight design.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB has one wheel design only (tire_* groups, material \"silver\"). Needs three rim variants to swap."
+    },
+    {
+      "id": "i-black-leather",
+      "groupId": "interior",
+      "label": "Black Leather Interior",
+      "priceCents": 0,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
+    },
+    {
+      "id": "i-bordeaux-leather",
+      "groupId": "interior",
+      "label": "Bordeaux Red Leather Interior",
+      "priceCents": 233000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
+    },
+    {
+      "id": "i-lightweight-buckets",
+      "groupId": "interior",
+      "label": "Full Bucket Seats",
+      "priceCents": 590000,
+      "description": "Carbon-fibre reinforced plastic shell. Weight-optimised.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "GLB is exterior-only: no seats, dash or cabin geometry."
+    },
+    {
+      "id": "p-sport-chrono",
+      "groupId": "packages",
+      "label": "Sport Chrono Package",
+      "priceCents": 279000,
+      "description": "Mode switch, stopwatch, dynamic engine mounts.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "p-sport-exhaust",
+      "groupId": "packages",
+      "label": "Sport Exhaust System",
+      "priceCents": 295000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "Only one exhaust exists (boot012, material \"silver\"); no sport variant."
+    },
+    {
+      "id": "p-pasm-sport",
+      "groupId": "packages",
+      "label": "PASM Sport Suspension (-10mm)",
+      "priceCents": 151000,
+      "description": "Lowered, firmer adaptive damping.",
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "p-rear-axle-steer",
+      "groupId": "packages",
+      "label": "Rear-Axle Steering",
+      "priceCents": 209000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "p-pccb",
+      "groupId": "packages",
+      "label": "Porsche Ceramic Composite Brakes (PCCB)",
+      "priceCents": 897000,
+      "description": "Yellow calipers. Requires wheels with sufficient caliper clearance.",
+      "visual": {
+        "kind": "paint",
+        "targetMaterial": "Material.001",
+        "hex": "#F2C200",
+        "metallic": 0.5,
+        "roughness": 0.35
+      },
+      "availableOn": ["911-c4s"]
+    },
+    {
+      "id": "p-carbon-roof",
+      "groupId": "packages",
+      "label": "Carbon Fibre Roof",
+      "priceCents": 390000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "Roof is not a separate mesh; it is part of the body shell (boot008/boot011)."
+    },
+    {
+      "id": "p-sunroof",
+      "groupId": "packages",
+      "label": "Sliding Glass Sunroof",
+      "priceCents": 232000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"],
+      "visualTodo": "No Roof_Solid/Roof_Sunroof variants; roof is part of the body shell."
+    },
+    {
+      "id": "p-heated-seats",
+      "groupId": "packages",
+      "label": "Seat Heating",
+      "priceCents": 53000,
+      "visual": {
+        "kind": "none"
+      },
+      "availableOn": ["911-c4s"]
+    }
+  ],
+  "rules": [
+    {
+      "id": "r-pccb-wheel-clearance",
+      "type": "requires",
+      "when": ["p-pccb"],
+      "then": ["w-carrera-exclusive-20", "w-rs-spyder-20"],
+      "message": "Ceramic composite brakes require Carrera Exclusive or RS Spyder wheels for caliper clearance."
+    },
+    {
+      "id": "r-buckets-no-heating",
+      "type": "excludes",
+      "when": ["i-lightweight-buckets"],
+      "then": ["p-heated-seats"],
+      "message": "Full bucket seats are not available with seat heating."
+    },
+    {
+      "id": "r-roof-conflict",
+      "type": "excludes",
+      "when": ["p-sunroof"],
+      "then": ["p-carbon-roof"],
+      "message": "The carbon fibre roof cannot be combined with the sliding glass sunroof."
+    },
+    {
+      "id": "r-rear-steer-needs-pasm",
+      "type": "requires",
+      "when": ["p-rear-axle-steer"],
+      "then": ["p-pasm-sport"],
+      "message": "Rear-axle steering is only available with PASM Sport Suspension."
+    },
+    {
+      "id": "r-buckets-need-sport-suspension",
+      "type": "requires",
+      "when": ["i-lightweight-buckets"],
+      "then": ["p-pasm-sport"],
+      "message": "Full bucket seats are only offered alongside PASM Sport Suspension."
+    }
+  ],
+  "priceRules": [
+    {
+      "kind": "base",
+      "modelId": "911-c4s",
+      "amountCents": 13710000
+    },
+    {
+      "kind": "bundleDiscount",
+      "requires": ["p-sport-chrono", "p-sport-exhaust", "p-pasm-sport"],
+      "amountCents": -120000,
+      "label": "Sport Plus package saving"
+    },
+    {
+      "kind": "fee",
+      "label": "Delivery, processing and handling",
+      "amountCents": 165000
+    }
+  ]
 }

@@ -11,9 +11,13 @@
     "build": "yarn workspace web build",
     "test": "yarn workspace @car-config/core test:run",
     "typecheck": "yarn workspaces run typecheck",
-    "lint": "yarn workspace web lint"
+    "lint": "yarn workspace web lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.3.0"
   }
 }

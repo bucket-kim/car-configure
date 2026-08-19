@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import type { Catalog } from "@car-config/core";
+import { useQuery } from "@tanstack/react-query";
 import { fetchJSON } from "./client";
 
 export function useCatalogQuery() {

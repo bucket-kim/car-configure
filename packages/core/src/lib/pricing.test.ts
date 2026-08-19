@@ -2,9 +2,9 @@
 //
 // Run with: yarn test
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import catalog from "../data/catalog.json";
-import type { Catalog, BuildSelection } from "../types/config";
+import type { BuildSelection, Catalog } from "../types/config";
 import { computePrice, formatCents } from "./pricing";
 
 const cat = catalog as unknown as Catalog;
@@ -57,9 +57,7 @@ describe("computePrice — totals", () => {
     b.options["exterior-color"] = ["c-pts-rubystone"]; // 1_283_000
     b.options.wheels = ["w-rs-spyder-20"]; // 360_000
     b.options.interior = ["i-bordeaux-leather"]; // 233_000
-    expect(total(b)).toBe(
-      BASE + 1_283_000 + 360_000 + 233_000 + 897_000 + 390_000 + FEE,
-    );
+    expect(total(b)).toBe(BASE + 1_283_000 + 360_000 + 233_000 + 897_000 + 390_000 + FEE);
   });
 });
 
@@ -115,9 +113,7 @@ describe("computePrice — line items", () => {
     const b = withPackages("p-sport-chrono", "p-sport-exhaust", "p-pasm-sport");
     const { lineItems, totalCents } = computePrice(cat, b);
     expect(Number.isInteger(totalCents)).toBe(true);
-    lineItems.forEach((l) =>
-      expect(Number.isInteger(l.amountCents)).toBe(true),
-    );
+    lineItems.forEach((l) => expect(Number.isInteger(l.amountCents)).toBe(true));
   });
 });
 

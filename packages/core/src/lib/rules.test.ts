@@ -8,14 +8,14 @@
 // functions matters: pure functions are trivially testable, and testable
 // code is what makes a CI pipeline worth having.
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import catalog from "../data/catalog.json";
-import type { Catalog, BuildSelection } from "../types/config";
+import type { BuildSelection, Catalog } from "../types/config";
 import {
+  applySelection,
+  computeDisabledOptions,
   selectedOptionIds,
   validateBuild,
-  computeDisabledOptions,
-  applySelection,
 } from "./rules";
 
 const cat = catalog as unknown as Catalog;
@@ -84,9 +84,7 @@ describe("validateBuild — requires rules", () => {
   it("flags PCCB on standard wheels", () => {
     const r = validateBuild(cat, withPackages("p-pccb"));
     expect(r.valid).toBe(false);
-    expect(r.violations.map((v) => v.ruleId)).toContain(
-      "r-pccb-wheel-clearance",
-    );
+    expect(r.violations.map((v) => v.ruleId)).toContain("r-pccb-wheel-clearance");
   });
 
   it("accepts PCCB with RS Spyder wheels (one of several satisfies)", () => {
@@ -103,9 +101,7 @@ describe("validateBuild — requires rules", () => {
 
   it("flags rear-axle steering without PASM", () => {
     const r = validateBuild(cat, withPackages("p-rear-axle-steer"));
-    expect(r.violations.map((v) => v.ruleId)).toContain(
-      "r-rear-steer-needs-pasm",
-    );
+    expect(r.violations.map((v) => v.ruleId)).toContain("r-rear-steer-needs-pasm");
   });
 
   it("accepts rear-axle steering with PASM", () => {
@@ -192,11 +188,7 @@ describe("applySelection", () => {
   });
 
   it("toggles off when an already-selected multi option is clicked", () => {
-    const next = applySelection(
-      cat,
-      withPackages("p-sport-chrono"),
-      "p-sport-chrono",
-    );
+    const next = applySelection(cat, withPackages("p-sport-chrono"), "p-sport-chrono");
     expect(next.options.packages).not.toContain("p-sport-chrono");
   });
 

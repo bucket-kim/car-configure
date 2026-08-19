@@ -7,11 +7,10 @@
 // Run `yarn test` and make pricing.test.ts pass.
 
 import type {
-  Catalog,
   BuildSelection,
+  Catalog,
   PriceBreakdown,
   PriceLineItem,
-  //   PriceRule,
 } from "../types/config";
 import { selectedOptionIds } from "./rules";
 
@@ -51,10 +50,7 @@ import { selectedOptionIds } from "./rules";
  *    This field is not decoration — it is how the UI knows whether it is
  *    displaying an estimate or a real quote.
  */
-export function computePrice(
-  catalog: Catalog,
-  build: BuildSelection,
-): PriceBreakdown {
+export function computePrice(catalog: Catalog, build: BuildSelection): PriceBreakdown {
   // TODO: implement
   const lineItems: PriceLineItem[] = [];
 
@@ -96,11 +92,7 @@ export function computePrice(
  *
  * Use Intl.NumberFormat rather than hand-rolling commas.
  */
-export function formatCents(
-  cents: number,
-  locale = "en-US",
-  currency = "USD",
-): string {
+export function formatCents(cents: number, locale = "en-US", currency = "USD"): string {
   // TODO: implement
   return new Intl.NumberFormat(locale, {
     style: "currency",

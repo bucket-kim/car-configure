@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import type {
   BuildSelection,
   Catalog,
@@ -10,10 +9,11 @@ import type {
 } from "@car-config/core";
 import {
   computeDisabledOptions,
+  computePrice,
   initialBuildFor,
   validateBuild,
 } from "@car-config/core";
-import { computePrice } from "@car-config/core";
+import { useMemo } from "react";
 import { useGlobalState } from "../state/useGlobalState";
 /**
  * The single place derived configuration state is computed.

@@ -1,6 +1,6 @@
 import type { Draft } from "immer";
-import type { UIModuleTypes } from "./modules/UIModule/UIModuleTypes";
 import type { DataModuleTypes } from "./modules/DataModule/DataModuleTypes";
+import type { UIModuleTypes } from "./modules/UIModule/UIModuleTypes";
 
 export interface GlobalStateTypes extends UIModuleTypes, DataModuleTypes {}
 

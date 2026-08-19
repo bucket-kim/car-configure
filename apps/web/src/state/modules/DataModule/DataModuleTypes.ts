@@ -1,9 +1,4 @@
-import type {
-  BuildSelection,
-  Catalog,
-  ModelId,
-  OptionId,
-} from "@car-config/core";
+import type { BuildSelection, Catalog, ModelId, OptionId } from "@car-config/core";
 
 export interface DataModuleTypes {
   build: BuildSelection | null;

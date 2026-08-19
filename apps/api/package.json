@@ -1,14 +1,14 @@
 {
-    "name": "@car-config/api",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "dependencies": {
-        "@aws-sdk/client-dynamodb": "^3.1111.0",
-        "@aws-sdk/lib-dynamodb": "^3.1111.0",
-        "@car-config/core": "*"
-    },
-    "devDependencies": {
-        "@types/aws-lambda": "^8.10.162"
-    }
+  "name": "@car-config/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1111.0",
+    "@aws-sdk/lib-dynamodb": "^3.1111.0",
+    "@car-config/core": "*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.162"
+  }
 }

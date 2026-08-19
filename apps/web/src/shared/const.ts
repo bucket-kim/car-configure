@@ -8,3 +8,5 @@ export const MATERIAL_PRESETS: Record<
   Leather_Bordeaux: { color: "#4a1220", metalness: 0.0, roughness: 0.8 },
   Race_Buckets: { color: "#1c1c22", metalness: 0.05, roughness: 0.7 },
 };
+
+export const SCENE_DATA_KEY = "__carViewerSceneData";

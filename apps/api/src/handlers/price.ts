@@ -1,10 +1,6 @@
+import { computePrice, validateBuild, type BuildSelection } from "@car-config/core";
 import type { APIGatewayProxyHandler } from "aws-lambda";
 import { loadCatalog } from "../db";
-import {
-  computePrice,
-  validateBuild,
-  type BuildSelection,
-} from "@car-config/core";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   // 1. parse event.body (a string, or null) — 400 on bad JSON

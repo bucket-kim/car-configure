@@ -11,8 +11,8 @@
 // Run `yarn vitest` and make rules.test.ts pass.
 
 import type {
-  Catalog,
   BuildSelection,
+  Catalog,
   OptionId,
   ValidationResult,
 } from "../types/config.ts";
@@ -68,10 +68,7 @@ export function selectedOptionIds(build: BuildSelection): Set<OptionId> {
  *
  * Leave `disabledOptionIds` as an empty array here — that's the next function.
  */
-export function validateBuild(
-  catalog: Catalog,
-  build: BuildSelection,
-): ValidationResult {
+export function validateBuild(catalog: Catalog, build: BuildSelection): ValidationResult {
   const result: ValidationResult = {
     valid: true,
     violations: [],
@@ -180,9 +177,7 @@ export function computeDisabledOptions(
     const candidate = applySelection(catalog, build, option.id);
     const after = validateBuild(catalog, candidate);
 
-    const introducesNew = after.violations.some(
-      (v) => !currentRuleIds.has(v.ruleId),
-    );
+    const introducesNew = after.violations.some((v) => !currentRuleIds.has(v.ruleId));
     if (introducesNew) disabled.push(option.id);
   }
 

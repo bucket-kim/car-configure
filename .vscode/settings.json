@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // Use the repo's own Prettier + plugins, never a globally installed one.
+  // Without this the extension may load a Prettier that has no knowledge of
+  // prettier-plugin-organize-imports, so imports are formatted but not pruned.
+  "prettier.prettierPath": "./node_modules/prettier",
+
+  // Use the workspace TypeScript, so the language service the plugin relies on
+  // matches the version the build uses.
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "files.eol": "\n"
+}

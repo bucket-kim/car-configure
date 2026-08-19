@@ -8,9 +8,9 @@
 // Nothing in this package may import React, Zustand, Three.js, or the AWS SDK.
 // If you ever need to, the thing you're writing belongs in apps/web or infra.
 
-export * from "./types/config";
-export * from "./lib/rules";
-export * from "./lib/pricing";
 export * from "./lib/build";
+export * from "./lib/pricing";
+export * from "./lib/rules";
+export * from "./types/config";
 
 export { default as catalog } from "./data/catalog.json";

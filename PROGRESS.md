@@ -17,12 +17,14 @@ Next: `POST /builds` + `GET /builds/{code}` (save/share).
 ### Phase 4c — IN PROGRESS (mid-refactor, don't start elsewhere)
 
 Done:
+
 - `@tanstack/react-query` installed, `QueryProvider` wrapping `<App />` in `main.tsx`
 - `src/api/client.ts` — `fetchJson<T>(path, init?)`, base URL from `VITE_API_URL`,
   throws on `!res.ok` (fetch does NOT throw on 4xx/5xx)
 - `src/api/queries.ts` — `useCatalogQuery()`, verified returning the live catalog
 
 In flight — the catalog moves from a JSON import to a network fetch:
+
 1. **Move `initialBuildFor(catalog, modelId)` into `packages/core`** — it's pure, and the
    server will want it too. `DataModule` then imports no catalog at all.
 2. **`DataModule` actions take `catalog` as a parameter** (`selectOption(catalog, optionId)`,
@@ -51,7 +53,7 @@ interface and implementation move together.
 
 ## Phase 1 — Data model ✅
 
-Designed the schema *before* any UI. `packages/core/src/types/config.ts` is the spine.
+Designed the schema _before_ any UI. `packages/core/src/types/config.ts` is the spine.
 
 - Money as **integer cents** — floats produce visible rounding errors on a $150k build.
 - Options carry their own `visual` instruction, so the 3D viewer never branches on an
@@ -71,12 +73,12 @@ Pure functions in `packages/core/src/lib/`, no framework imports, fully unit tes
 - `validateBuild` — group constraints + declarative rules → `ValidationResult`.
 - `computeDisabledOptions` — hypothetically applies each option and compares violation
   sets. **Key insight:** can't test `valid === false` (a half-built car is always
-  invalid); must detect violations the candidate option *introduces*.
+  invalid); must detect violations the candidate option _introduces_.
 - `applySelection` — single = replace, multiple = toggle, always returns a new object.
 - `computePrice` / `formatCents` — integers throughout, `cents / 100` only at the
   display boundary.
 
-All tests green. This layer is why Phase 4 is a *move*, not a rewrite.
+All tests green. This layer is why Phase 4 is a _move_, not a rewrite.
 
 ## Phase 3 — 3D viewer + UI ✅
 
@@ -109,6 +111,7 @@ runtimes** — that's the whole point.
 ## Phase 4b — AWS, step by step
 
 ### Step 1 — CDK project ✅
+
 `cdk init app --language typescript` in `infra/`.
 
 **Mental model:** CDK code is a **generator that runs once and exits**, not a server.
@@ -120,22 +123,25 @@ An empty stack still emits ~100 lines: a `CDKMetadata` resource, region conditio
 a `BootstrapVersion` parameter — which is the preflight check `cdk bootstrap` satisfies.
 
 ### Step 2 — DynamoDB table ✅
+
 ```ts
 new dynamodb.Table(this, "CatalogTable", {
   partitionKey: { name: "catalogId", type: AttributeType.STRING },
   billingMode: BillingMode.PAY_PER_REQUEST,
   removalPolicy: RemovalPolicy.DESTROY,
-})
+});
 ```
+
 - Partition key = the one thing you look up by. Access patterns first, then key design.
 - `PAY_PER_REQUEST` — spiky, low volume, nothing when idle. Same logic that chose Lambda.
-- `DESTROY` is safe *because the data is reproducible* from `catalog.json`.
+- `DESTROY` is safe _because the data is reproducible_ from `catalog.json`.
 - One CDK prop → two template attributes (`DeletionPolicy` + `UpdateReplacePolicy`).
 - **No `TableName` in the template** — CloudFormation generates it, so the Lambda must
   receive it at runtime via an env var.
 - **Logical IDs are identity.** Renaming one = delete + recreate, not a rename.
 
 ### Step 3 — First Lambda ✅
+
 `NodejsFunction` (esbuild bundles TS) pointing at `apps/api/src/handlers/catalog.ts`.
 
 - Handler must be an **async function** taking an event — not an object.
@@ -147,10 +153,14 @@ new dynamodb.Table(this, "CatalogTable", {
   `Code` points at an S3 object, not your source: that's what bootstrap's bucket is for.
 
 ### Step 4 — Lambda ↔ DynamoDB ✅
+
 ```ts
-environment: { CATALOG_TABLE: catalogTable.tableName }
-catalogTable.grantReadData(catalogFn)
+environment: {
+  CATALOG_TABLE: catalogTable.tableName;
+}
+catalogTable.grantReadData(catalogFn);
 ```
+
 - Two separate things: **permission** (IAM) and **knowledge** (env var).
 - `tableName` is a **token** at synth time — a placeholder that becomes a `Ref` in the
   template. Can't be inspected in stack code, and it creates the dependency edge that
@@ -162,6 +172,7 @@ catalogTable.grantReadData(catalogFn)
 - Drop hardcoded `region` — Lambda sets `AWS_REGION` automatically.
 
 ### Step 5 — API Gateway ✅
+
 `HttpApi` + `HttpLambdaIntegration`, route `GET /catalog`, permissive CORS, `CfnOutput`
 for the URL.
 
@@ -175,10 +186,12 @@ for the URL.
 (Gateway → Lambda → DynamoDB) and the table is simply empty.
 
 ### Step 6 — Seed the catalog ✅
+
 `infra/scripts/seed-catalog.ts` reads the catalog, resolves the table name from the
 stack's CloudFormation outputs, and writes one item.
 
 Bugs worth remembering from this step:
+
 - **empty script file** — `tsx` ran it, did nothing, exited 0
 - **missing `await`** on `docClient.send` — no confirmation, errors swallowed as
   unhandled rejections
@@ -189,6 +202,7 @@ Bugs worth remembering from this step:
   exact byte strings; no trimming, no coercion
 
 What it does:
+
 1. read `packages/core/src/data/catalog.json` (relative path — `infra` is outside the
    workspaces, so `@car-config/core/catalog` won't resolve)
 2. resolve the table name (CLI arg, or `DescribeStacks` on the stack outputs —
@@ -201,6 +215,7 @@ lifecycles. A price change shouldn't require a CloudFormation deploy.
 `PutCommand` overwrites, so re-running is safe.
 
 ### Step 7 — Remaining endpoints ⬜
+
 - `POST /price` — same `core` functions, returns `authoritative: true`
 - `POST /builds` — save, return a share code (revalidate server-side; never trust the client)
 - `GET /builds/{code}` — load, and **recompute** price rather than storing it
@@ -218,25 +233,25 @@ lifecycles. A price change shouldn't require a CloudFormation deploy.
 
 ## Decisions log
 
-| Decision | Chose | Why | Rejected |
-|---|---|---|---|
-| Compute | Lambda | Bursty, stateless, ~zero idle traffic | EC2 (24/7 cost + ops), Fargate (overkill) |
-| Pricing location | Server authoritative, client estimates | Client price is editable in DevTools | Client-only |
-| Rules storage | Declarative rows in DynamoDB | Change rules without redeploying | Hardcoded in Lambda |
-| IaC | CDK TypeScript | Same language as the app; generates the IAM nobody writes by hand | Raw CFN YAML, SAM |
-| API flavour | HTTP API | Cheaper, lower latency, no need for REST's extras | REST API |
-| Table design | One item holds whole catalog | One read serves everything; 400KB limit is far off | One item per option |
-| `infra` placement | Outside yarn workspaces | Simpler to learn in isolation | In workspaces — would have avoided `projectRoot`/esbuild wiring |
-| IAM for deploys | AdministratorAccess on a personal user | Avoids permission whack-a-mole while learning | Least-privilege deploy role (correct for real work) |
-| Accordion UI | One group open at a time | Matches how real OEM configurators scale to 300 options | Flat list (fine at this size), multi-open |
-| Invalid clicks | Accept + report violations | Auto-deselecting things the user didn't touch is more confusing | Refuse click; auto-deselect |
-| React vs Three.js mutation | Documented `eslint-disable` | Three.js materials are mutable by design; clones never leave the component | Refactor to refs |
+| Decision                   | Chose                                  | Why                                                                        | Rejected                                                        |
+| -------------------------- | -------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Compute                    | Lambda                                 | Bursty, stateless, ~zero idle traffic                                      | EC2 (24/7 cost + ops), Fargate (overkill)                       |
+| Pricing location           | Server authoritative, client estimates | Client price is editable in DevTools                                       | Client-only                                                     |
+| Rules storage              | Declarative rows in DynamoDB           | Change rules without redeploying                                           | Hardcoded in Lambda                                             |
+| IaC                        | CDK TypeScript                         | Same language as the app; generates the IAM nobody writes by hand          | Raw CFN YAML, SAM                                               |
+| API flavour                | HTTP API                               | Cheaper, lower latency, no need for REST's extras                          | REST API                                                        |
+| Table design               | One item holds whole catalog           | One read serves everything; 400KB limit is far off                         | One item per option                                             |
+| `infra` placement          | Outside yarn workspaces                | Simpler to learn in isolation                                              | In workspaces — would have avoided `projectRoot`/esbuild wiring |
+| IAM for deploys            | AdministratorAccess on a personal user | Avoids permission whack-a-mole while learning                              | Least-privilege deploy role (correct for real work)             |
+| Accordion UI               | One group open at a time               | Matches how real OEM configurators scale to 300 options                    | Flat list (fine at this size), multi-open                       |
+| Invalid clicks             | Accept + report violations             | Auto-deselecting things the user didn't touch is more confusing            | Refuse click; auto-deselect                                     |
+| React vs Three.js mutation | Documented `eslint-disable`            | Three.js materials are mutable by design; clones never leave the component | Refactor to refs                                                |
 
 ---
 
 ## Interview talking points
 
-- Why Lambda over EC2 *for this traffic shape* — not "serverless is modern"
+- Why Lambda over EC2 _for this traffic shape_ — not "serverless is modern"
 - Why price is computed server-side — the DevTools argument, not dogma
 - One `lib/` running in browser and Lambda: what made it possible (purity from day one)
 - Constraint modelling: five rule shapes, and why `computeDisabledOptions` can't just

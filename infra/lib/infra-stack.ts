@@ -1,15 +1,11 @@
-import * as cdk from "aws-cdk-lib/core";
-import { Construct } from "constructs";
+import { CorsHttpMethod, HttpApi, HttpMethod } from "aws-cdk-lib/aws-apigatewayv2";
+import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import * as cdk from "aws-cdk-lib/core";
+import { Construct } from "constructs";
 import * as path from "node:path";
-import {
-  CorsHttpMethod,
-  HttpApi,
-  HttpMethod,
-} from "aws-cdk-lib/aws-apigatewayv2";
-import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const repoRoot = path.join(__dirname, "..", "..");
@@ -29,14 +25,7 @@ export class InfraStack extends cdk.Stack {
     });
 
     const catalogFn = new NodejsFunction(this, "CatalogFn", {
-      entry: path.join(
-        repoRoot,
-        "apps",
-        "api",
-        "src",
-        "handlers",
-        "catalog.ts",
-      ),
+      entry: path.join(repoRoot, "apps", "api", "src", "handlers", "catalog.ts"),
       projectRoot: repoRoot,
       depsLockFilePath: path.join(repoRoot, "yarn.lock"),
       handler: "handler",
@@ -63,11 +52,7 @@ export class InfraStack extends cdk.Stack {
     const api = new HttpApi(this, "ConfiguratorApi", {
       corsPreflight: {
         allowOrigins: ["*"],
-        allowMethods: [
-          CorsHttpMethod.GET,
-          CorsHttpMethod.POST,
-          CorsHttpMethod.OPTIONS,
-        ],
+        allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
         allowHeaders: ["Content-Type"],
       },
     });

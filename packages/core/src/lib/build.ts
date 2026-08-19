@@ -6,10 +6,7 @@ import type {
   OptionId,
 } from "../types/config";
 
-export const initialBuildFor = (
-  catalog: Catalog,
-  modelId: ModelId,
-): BuildSelection => {
+export const initialBuildFor = (catalog: Catalog, modelId: ModelId): BuildSelection => {
   const options: Record<GroupId, OptionId[]> = {};
   for (const group of catalog.groups) {
     const first = catalog.options.find(

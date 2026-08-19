@@ -1,18 +1,19 @@
+import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { useShallow } from "zustand/shallow";
 import type {
   GetState,
   GlobalStateApiType,
   GlobalStateTypes,
   SetState,
 } from "./GlobalStateTypes";
-import { UIModule } from "./modules/UIModule/UIModule";
-import { create, useStore } from "zustand";
-import { useShallow } from "zustand/shallow";
 import { DataModule } from "./modules/DataModule/DataModule";
+import { UIModule } from "./modules/UIModule/UIModule";
 
-export const modules: ((
-  args: GlobalStateApiType,
-) => Partial<GlobalStateTypes>)[] = [UIModule, DataModule];
+export const modules: ((args: GlobalStateApiType) => Partial<GlobalStateTypes>)[] = [
+  UIModule,
+  DataModule,
+];
 
 const createInitialStore = (
   set: SetState<GlobalStateTypes>,

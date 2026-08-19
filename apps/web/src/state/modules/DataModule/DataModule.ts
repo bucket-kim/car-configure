@@ -1,11 +1,6 @@
-import type {
-  BuildSelection,
-  Catalog,
-  ModelId,
-  OptionId,
-} from "@car-config/core";
-import type { GlobalStateApiType } from "../../GlobalStateTypes";
+import type { BuildSelection, Catalog, ModelId, OptionId } from "@car-config/core";
 import { applySelection, initialBuildFor } from "@car-config/core";
+import type { GlobalStateApiType } from "../../GlobalStateTypes";
 
 // const catalog = catalogJson as unknown as Catalog;
 
