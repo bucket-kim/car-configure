@@ -10,7 +10,15 @@ interface UIProps {
 }
 
 const UI: FC<UIProps> = ({ catalog }) => {
-  const { groups, price, optionsByGroup, disabled, selected } = useConfiguration(catalog);
+  const {
+    groups,
+    estimate,
+    optionsByGroup,
+    disabled,
+    selected,
+    servicePrice,
+    isPricePending,
+  } = useConfiguration(catalog);
 
   const { selectOption, reset } = useGlobalState((state) => {
     return {
@@ -18,6 +26,8 @@ const UI: FC<UIProps> = ({ catalog }) => {
       reset: state.reset,
     };
   });
+
+  const displayed = servicePrice ?? estimate;
 
   const [openGroup, setOpenGroup] = useState(new Set<GroupId>());
 
@@ -55,7 +65,14 @@ const UI: FC<UIProps> = ({ catalog }) => {
             </div>
           );
         })}
-        <p>{formatCents(price.totalCents)}</p>
+        <p>{formatCents(displayed.totalCents)}</p>
+        <small>
+          {displayed.authoritative
+            ? "Confirmed"
+            : isPricePending
+              ? "Confirming…"
+              : "Estimate"}
+        </small>
         <button onClick={() => reset(catalog)}>Reset</button>
       </div>
     </UIStyleContainer>

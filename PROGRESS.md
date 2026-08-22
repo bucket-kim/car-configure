@@ -1,7 +1,7 @@
 # Progress Log — Car Configurator
 
 Step-by-step record of what's built, why, and what's next.
-Companion to `PROJECT_BRIEF.md` (which holds scope and the five key segments).
+Companion to `README.md` (scope and overview) and `ARCHITECTURE.md` (how it fits together).
 
 ---
 
@@ -18,7 +18,23 @@ machine, then deploys to AWS via OIDC — **no credentials stored anywhere.** Th
 "one file, two runtimes" is now enforced rather than remembered: both artifacts are built
 from the same commit by the same job.
 
-**Next: Phase 7** — README and decision log.
+**Phase 7 done.** README replaces the Vite scaffold: pitch, live link, the gap analysis
+that set the scope, the architecture, and an explicit **known gaps** list. Naming your own
+seams first is stronger than hoping nobody finds them.
+
+**Server pricing wired to the UI.** `usePriceQuery(build)` keyed on the build itself, so
+returning to a previously priced build is a cache hit with no request. `placeholderData:
+keepPreviousData` stops the confirmed price blinking out mid-flight. `useConfiguration`
+now returns `estimate` (browser), `serverPrice` (Lambda) and `isPricePending` separately —
+the old unqualified `price` was renamed because with two numbers in play, a vague name
+invites a component to render the untrusted one.
+
+The UI displays `serverPrice ?? estimate` and labels it by reading `displayed.authoritative`
+rather than branching on which variable it holds — the value describes itself. It also
+compares the two and would warn on screen if they disagreed: a live assertion, running in
+production, that browser and Lambda agree on every click.
+
+**Next:** `POST /builds` + `GET /builds/{code}` (save/share codes).
 
 Deferred by choice (a working end-to-end system beat both):
 

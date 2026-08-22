@@ -14,20 +14,9 @@ import {
   validateBuild,
 } from "@car-config/core";
 import { useMemo } from "react";
+import { usePriceQuery } from "../api/queries";
 import { useGlobalState } from "../state/useGlobalState";
-/**
- * The single place derived configuration state is computed.
- *
- * Why a hook rather than fields in the Zustand store: price, validity and
- * disabled options are all pure functions of `build`. Storing them would mean
- * every action has to remember to recompute all three, and the day one of them
- * is forgotten the UI shows a price that doesn't match the car. Deriving them
- * at render makes that class of bug impossible.
- *
- * Why one hook rather than three: the three derivations share inputs and are
- * always needed together. One memo keyed on `build` recomputes them as a set,
- * so they can never disagree with each other.
- */
+
 export interface ConfigurationView {
   catalog: Catalog;
   build: BuildSelection;
@@ -38,7 +27,10 @@ export interface ConfigurationView {
   /** ruleId -> message, for explaining WHY something is unavailable. */
   reasons: Map<OptionId, string>;
   validation: ValidationResult;
-  price: PriceBreakdown;
+  estimate: PriceBreakdown;
+  /** Computed by Lambda from the same functions. Undefined until it lands. */
+  servicePrice: PriceBreakdown | undefined;
+  isPricePending: boolean;
 }
 
 export function useConfiguration(catalog: Catalog): ConfigurationView {
@@ -59,6 +51,8 @@ export function useConfiguration(catalog: Catalog): ConfigurationView {
     [storeBuild, catalog],
   );
 
+  const { data: priceData, isPending: isPricePending } = usePriceQuery(build);
+
   return useMemo(() => {
     const groups = [...catalog.groups].sort((a, b) => a.order - b.order);
 
@@ -72,7 +66,7 @@ export function useConfiguration(catalog: Catalog): ConfigurationView {
     const selected = new Set(Object.values(build.options).flat());
     const disabled = new Set(computeDisabledOptions(catalog, build));
     const validation = validateBuild(catalog, build);
-    const price = computePrice(catalog, build);
+    const estimate = computePrice(catalog, build);
 
     // Map each disabled option to the rule message that explains it, so the UI
     // can say "not available with the sliding sunroof" instead of silently
@@ -94,9 +88,11 @@ export function useConfiguration(catalog: Catalog): ConfigurationView {
       disabled,
       reasons,
       validation,
-      price,
+      estimate,
+      servicePrice: priceData?.price,
+      isPricePending,
       selectOption,
       reset,
     };
-  }, [build, selectOption, reset, catalog]);
+  }, [build, selectOption, reset, catalog, priceData, isPricePending]);
 }

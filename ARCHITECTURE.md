@@ -2,7 +2,7 @@
 
 How the pieces connect, and why each one is where it is.
 
-Companion to `PROJECT_BRIEF.md` (scope) and `PROGRESS.md` (build log).
+Companion to `README.md` (scope and overview) and `PROGRESS.md` (build log).
 
 ---
 

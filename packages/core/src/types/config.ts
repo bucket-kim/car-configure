@@ -191,3 +191,8 @@ export interface PriceBreakdown {
   /** Set by the server only. The client's own calc leaves this false. */
   authoritative: boolean;
 }
+
+export interface PriceResponse {
+  validation: ValidationResult;
+  price: PriceBreakdown;
+}
