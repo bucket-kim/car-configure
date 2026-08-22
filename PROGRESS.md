@@ -13,8 +13,12 @@ API Gateway → Lambda → DynamoDB for its data. `POST /price` returns
 **One source file, two runtimes, same answer.** The architecture's central claim is
 demonstrated, not asserted.
 
-**Next: Phase 6 — CI/CD.** Picking up at the GitHub OIDC provider + deploy role in
-`infra-stack.ts`. See the Phase 6 section below for the full plan.
+**Phase 6 done.** A push to `main` now runs lint, format, tests and build on GitHub's
+machine, then deploys to AWS via OIDC — **no credentials stored anywhere.** The claim
+"one file, two runtimes" is now enforced rather than remembered: both artifacts are built
+from the same commit by the same job.
+
+**Next: Phase 7** — README and decision log.
 
 Deferred by choice (a working end-to-end system beat both):
 
@@ -278,7 +282,7 @@ certs only from there.
 
 ---
 
-## Phase 6 — CI/CD with GitHub Actions ⬜ IN PROGRESS
+## Phase 6 — CI/CD with GitHub Actions ✅
 
 Repo: `bucket-kim/car-configure`, branch `main`.
 
@@ -297,20 +301,20 @@ same commit.** CI is what makes the second half true. Without it the guarantee i
 Smaller wins: a red test can't reach AWS; `VITE_API_URL` moves out of a gitignored
 `.env.local` that exists on exactly one laptop; no long-lived credentials anywhere.
 
-### Steps
+### What was built
 
-**1. GitHub OIDC provider + deploy role in CDK** ⬜
+**1. GitHub OIDC provider + deploy role in CDK** ✅
 
 Rather than storing an access key, GitHub mints a short-lived signed token asserting
-_"I am a run on repo `bucket-kim/car-configure`, branch `main`."_ AWS verifies the
-signature, checks the claim, returns 1-hour credentials. **No secret is stored anywhere.**
+_"I am a run on this repo, branch `main`."_ AWS verifies the signature, checks the claim,
+returns 1-hour credentials. **No secret is stored anywhere.** Neither side holds a
+credential for the other: AWS holds a repo identifier as a condition string, GitHub holds
+a role ARN. Both are public information.
 
 - `iam.OpenIdConnectProvider` — url `https://token.actions.githubusercontent.com`,
   `clientIds: ["sts.amazonaws.com"]`. An account holds only **one** provider per URL;
   a second attempt fails with `EntityAlreadyExists`.
-- `iam.Role` with `iam.WebIdentityPrincipal`, conditions:
-  - `StringEquals` `...:aud` → `sts.amazonaws.com`
-  - `StringEquals` `...:sub` → `repo:bucket-kim/car-configure:ref:refs/heads/main`
+- `iam.Role` with `iam.WebIdentityPrincipal`, `StringEquals` on `...:aud` and `...:sub`.
 
   **The `sub` condition is the entire security boundary.** Copying `repo:*` from a blog
   post grants any GitHub repository on earth the right to assume the role.
@@ -320,28 +324,75 @@ signature, checks the claim, returns 1-hour credentials. **No secret is stored a
   grant — `sts:AssumeRole` on `arn:aws:iam::${account}:role/cdk-*`. The chain reads:
   GitHub proves identity → assumes this thin role → which assumes CDK's roles → which
   touch resources. Each link narrow.
-- `CfnOutput` the role ARN.
 
-**2. Deploy locally one last time** ⬜ — the role has to exist before GitHub can assume it.
+**2. Deploy locally one last time** ✅ — the role has to exist before GitHub can assume it.
 
-**3. `.github/workflows/deploy.yml`** ⬜ — on push to `main`: checkout → node + yarn
-cache → install → `format:check` → `lint` → `test` → `yarn build` (web) → `cdk deploy`.
-Fails fast, so a red test never reaches AWS. Needs `permissions: id-token: write` for
-OIDC to work at all.
+**3. `.github/workflows/deploy.yml`** ✅ — on push to `main`: checkout → node + yarn
+cache → install → `format:check` → `lint` → `test` → `yarn build` → install in `infra`
+→ configure credentials → `cdk deploy`.
 
-**4. Repo variables** ⬜ — `AWS_REGION`, `AWS_DEPLOY_ROLE_ARN`, `VITE_API_URL`.
+Four decisions inside that list:
 
-**5. Push and debug** ⬜ — the first run essentially always fails on something
-(permissions block, yarn cache path, region).
+- `permissions: id-token: write` — **without it GitHub never mints the token at all**,
+  and the AWS step fails with a misleading "credentials could not be loaded."
+- **Credentials are configured second-to-last, not first.** Lint, tests and build all run
+  before AWS is reachable, so a red test literally cannot touch the account.
+- A **second `yarn install` in `infra`** — the cost of keeping `infra` outside the
+  workspaces, surfacing exactly where you'd predict.
+- `--require-approval never` — the IAM confirmation prompt would hang CI forever. Safe
+  because the reviewer is now the pull request.
 
-**6. Prove the gate** ⬜ — break a test on purpose, confirm the deploy is blocked, revert.
-The claim is that a red test can't reach AWS; verify it rather than assume it.
+**4. Repo variables** ✅ — `AWS_REGION`, `AWS_DEPLOY_ROLE_ARN`, `VITE_API_URL` as
+**Variables**, not Secrets. None are confidential; a role ARN is useless without a
+matching token, and `VITE_API_URL` is inlined into a public bundle anyway. Reserving
+`secrets` for things that actually grant access keeps the distinction meaningful.
+
+**5. Push and debug** ✅ — see below.
+
+**6. Prove the gate** ⬜ — break a test on purpose, confirm the deploy is skipped, revert.
+Still worth doing: every run so far has been green, which is consistent with the gate
+working _and_ with there being no gate. Same logic as `computeDisabledOptions` — a check
+that has never failed hasn't been shown to check anything.
+
+### The OIDC debugging story
+
+`Not authorized to perform sts:AssumeRoleWithWebIdentity`, for six rounds, with a trust
+policy that was demonstrably correct.
+
+Eliminated one at a time: trust policy conditions (read back from live AWS), the OIDC
+provider (single, ARN matching), `id-token: write` (a token _was_ minted — that's why the
+failure was an _authorization_ error rather than a credentials one), the role ARN
+(`get-role` succeeded), Variables-vs-Secrets, and the region.
+
+The answer came from CloudTrail. The real `sub` was:
+
+```
+repo:bucket-kim@70263120/car-configure@1324302608:ref:refs/heads/main
+```
+
+GitHub issues **immutable subject claims** — owner and repo carry their numeric IDs.
+Names change; IDs don't. Binding trust to IDs means renaming a repo can't hand the role
+to whoever claims the old name next. More secure, and invisible unless you read a token.
+
+**Why it took six rounds:** every source consulted was a _reconstruction_ of the claim —
+the CDK source, the deployed trust policy, and a debug step that built the expected `sub`
+from `${{ github.repository }}`. All three described what the value should be. None
+observed what it was. CloudTrail was the first thing that recorded the actual request.
+
+Two lessons worth more than the fix:
+
+- **"Not authorized" means the request arrived and was evaluated.** That should route you
+  to the request log immediately, not back to the config that generates the request.
+- **A check that cannot come back negative is not a check.** One debug step hardcoded the
+  string it was supposed to be testing, so it "passed" while proving nothing — the same
+  failure shape as the empty `seed-catalog.ts` that exited 0.
 
 ---
 
 ## Next phases
 
 - **7** — README, decision log finalisation
+- **6.6** — prove the CI gate blocks a red test (2 minutes, still outstanding)
 - **Deferred** — `POST /builds` + `GET /builds/{code}`; UI polish
 - **Personal** — rebuild a throwaway AWS stack from scratch, for repetition
 
@@ -349,23 +400,25 @@ The claim is that a red test can't reach AWS; verify it rather than assume it.
 
 ## Decisions log
 
-| Decision                   | Chose                                  | Why                                                                        | Rejected                                                         |
-| -------------------------- | -------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Compute                    | Lambda                                 | Bursty, stateless, ~zero idle traffic                                      | EC2 (24/7 cost + ops), Fargate (overkill)                        |
-| Pricing location           | Server authoritative, client estimates | Client price is editable in DevTools                                       | Client-only                                                      |
-| Rules storage              | Declarative rows in DynamoDB           | Change rules without redeploying                                           | Hardcoded in Lambda                                              |
-| IaC                        | CDK TypeScript                         | Same language as the app; generates the IAM nobody writes by hand          | Raw CFN YAML, SAM                                                |
-| API flavour                | HTTP API                               | Cheaper, lower latency, no need for REST's extras                          | REST API                                                         |
-| Table design               | One item holds whole catalog           | One read serves everything; 400KB limit is far off                         | One item per option                                              |
-| `infra` placement          | Outside yarn workspaces                | Simpler to learn in isolation                                              | In workspaces — would have avoided `projectRoot`/esbuild wiring  |
-| IAM for deploys            | AdministratorAccess on a personal user | Avoids permission whack-a-mole while learning                              | Least-privilege deploy role (correct for real work)              |
-| Accordion UI               | One group open at a time               | Matches how real OEM configurators scale to 300 options                    | Flat list (fine at this size), multi-open                        |
-| Invalid clicks             | Accept + report violations             | Auto-deselecting things the user didn't touch is more confusing            | Refuse click; auto-deselect                                      |
-| React vs Three.js mutation | Documented `eslint-disable`            | Three.js materials are mutable by design; clones never leave the component | Refactor to refs                                                 |
-| Frontend hosting           | S3 + CloudFront, private bucket + OAC  | A built SPA is static files; no server needed. CDN edge-caches the `.glb`  | Public bucket website hosting, Amplify, Vercel                   |
-| Cache policy               | Split: assets immutable, HTML no-cache | Hashed filenames can't go stale; `index.html`'s URL never changes          | One policy for everything (ships the stale-HTML bug)             |
-| Domain                     | CloudFront default `*.cloudfront.net`  | Proves the same architecture; a domain adds cost and no signal             | Route 53 + ACM cert (must be `us-east-1`)                        |
-| CI credentials             | GitHub OIDC → thin role → `cdk-*`      | Nothing long-lived is stored; trust is in the `sub` claim, not a string    | Access keys in GitHub Secrets; `AdministratorAccess` on the role |
+| Decision                   | Chose                                  | Why                                                                        | Rejected                                                           |
+| -------------------------- | -------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Compute                    | Lambda                                 | Bursty, stateless, ~zero idle traffic                                      | EC2 (24/7 cost + ops), Fargate (overkill)                          |
+| Pricing location           | Server authoritative, client estimates | Client price is editable in DevTools                                       | Client-only                                                        |
+| Rules storage              | Declarative rows in DynamoDB           | Change rules without redeploying                                           | Hardcoded in Lambda                                                |
+| IaC                        | CDK TypeScript                         | Same language as the app; generates the IAM nobody writes by hand          | Raw CFN YAML, SAM                                                  |
+| API flavour                | HTTP API                               | Cheaper, lower latency, no need for REST's extras                          | REST API                                                           |
+| Table design               | One item holds whole catalog           | One read serves everything; 400KB limit is far off                         | One item per option                                                |
+| `infra` placement          | Outside yarn workspaces                | Simpler to learn in isolation                                              | In workspaces — would have avoided `projectRoot`/esbuild wiring    |
+| IAM for deploys            | AdministratorAccess on a personal user | Avoids permission whack-a-mole while learning                              | Least-privilege deploy role (correct for real work)                |
+| Accordion UI               | One group open at a time               | Matches how real OEM configurators scale to 300 options                    | Flat list (fine at this size), multi-open                          |
+| Invalid clicks             | Accept + report violations             | Auto-deselecting things the user didn't touch is more confusing            | Refuse click; auto-deselect                                        |
+| React vs Three.js mutation | Documented `eslint-disable`            | Three.js materials are mutable by design; clones never leave the component | Refactor to refs                                                   |
+| Frontend hosting           | S3 + CloudFront, private bucket + OAC  | A built SPA is static files; no server needed. CDN edge-caches the `.glb`  | Public bucket website hosting, Amplify, Vercel                     |
+| Cache policy               | Split: assets immutable, HTML no-cache | Hashed filenames can't go stale; `index.html`'s URL never changes          | One policy for everything (ships the stale-HTML bug)               |
+| Domain                     | CloudFront default `*.cloudfront.net`  | Proves the same architecture; a domain adds cost and no signal             | Route 53 + ACM cert (must be `us-east-1`)                          |
+| CI credentials             | GitHub OIDC → thin role → `cdk-*`      | Nothing long-lived is stored; trust is in the `sub` claim, not a string    | Access keys in GitHub Secrets; `AdministratorAccess` on the role   |
+| CI platform                | GitHub Actions                         | Push model — AWS is granted no access to the repo; checks live by the PRs  | CodePipeline + CodeBuild (pull model, needs a CodeStar Connection) |
+| OIDC subject binding       | Immutable claim, with numeric IDs      | Names can be renamed and re-registered; owner and repo IDs cannot          | Name-based `sub` (what broke), `repo:owner/*` wildcards            |
 
 ---
 
