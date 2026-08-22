@@ -6,6 +6,8 @@ import UI from "./components/UI/UI";
 function App() {
   const { data: catalog, isLoading, error } = useCatalogQuery();
 
+  console.log("hi");
+
   if (isLoading) return <p>Loading catalog…</p>;
   if (error) return <p>Failed to load: {String(error)}</p>;
   if (!catalog) return null;
