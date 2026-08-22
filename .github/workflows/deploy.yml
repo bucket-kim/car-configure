@@ -1,0 +1,43 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write # required: lets GitHub mint the OIDC token
+  contents: read # required: lets the runner check out the repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn test
+
+      - run: yarn build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+
+      # infra lives outside the yarn workspaces, so it needs its own install
+      - run: yarn install --frozen-lockfile
+        working-directory: infra
+
+      # first point in the job where AWS is reachable at all
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - run: npx cdk deploy --require-approval never
+        working-directory: infra
