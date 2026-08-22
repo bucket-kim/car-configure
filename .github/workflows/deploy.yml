@@ -33,6 +33,7 @@ jobs:
       - run: yarn install --frozen-lockfile
         working-directory: infra
 
+      # TEMPORARY diagnostic — remove once OIDC works
       - run: echo "sub is repo:bucket-kim/car-configure:ref:refs/heads/main"
 
       # first point in the job where AWS is reachable at all
