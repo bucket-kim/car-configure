@@ -33,12 +33,6 @@ jobs:
       - run: yarn install --frozen-lockfile
         working-directory: infra
 
-      # TEMPORARY diagnostic — remove once OIDC works
-      - run: |
-          echo "actual sub:      repo:${{ github.repository }}:ref:${{ github.ref }}"
-          echo "role arn is set: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}"
-          echo "region:          ${{ vars.AWS_REGION }}"
-
       # first point in the job where AWS is reachable at all
       - uses: aws-actions/configure-aws-credentials@v4
         with:

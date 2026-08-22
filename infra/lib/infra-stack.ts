@@ -149,7 +149,10 @@ export class InfraStack extends cdk.Stack {
         StringEquals: {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
           "token.actions.githubusercontent.com:sub":
-            "repo:bucket-kim/car-configure:ref:refs/heads/main",
+            // GitHub issues "immutable" subject claims: owner and repo carry their
+            // numeric IDs, which never change even if either is renamed. Binding to
+            // IDs is why a rename can't hand this role to a future squatter.
+            "repo:bucket-kim@70263120/car-configure@1324302608:ref:refs/heads/main",
         },
       }),
     });
